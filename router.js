@@ -36,7 +36,8 @@ router.get("/detail/:activeName/:mname", async function(req, res) {
   const {mname, activeName} = req.params
  
   var myres = await queryDetail(activeName, mname);
-
+  console.log(myres[1])
+  
 
   res.json({ data: {
       list:myres[0][0],

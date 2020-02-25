@@ -68,7 +68,7 @@ const queryDetail = (activeName, mname) => {
   connection.connect();
   return new Promise((res, rej) => {
     connection.query(`select DISTINCT mname,img ,introduce, star, director, actor, region, language,time  from ${activeName} WHERE mname ='${mname}';
-    select src  from ${activeName} WHERE mname  ='${mname}'`,function(
+    select src , steps from ${activeName} WHERE mname  ='${mname}'`,function(
       error,
       results,
       fields

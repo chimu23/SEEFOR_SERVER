@@ -89,4 +89,36 @@ const queryDetail = (activeName, mname) => {
  
 };
 
-module.exports = { query, queryList, queryDetail};
+
+// 查找单个用户
+const queryUser =(name)=>{
+  console.log(name)
+  var connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "movie",
+    multipleStatements: true
+  });
+
+  connection.connect();
+  return new Promise((res, rej) => {
+    connection.query(`select *  from users WHERE name ='${name}'`,function(
+      error,
+      results,
+      fields
+     ) {
+      try {       
+        res(results)
+        
+      } catch (error) {
+       rej(error)
+       
+      }
+     
+    })
+    connection.end()
+  });
+}
+
+module.exports = { query, queryList, queryDetail, queryUser};

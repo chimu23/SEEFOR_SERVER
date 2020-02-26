@@ -1,5 +1,11 @@
 var express = require("express");
-var { query, queryList, queryDetail } = require("./api/query.js");
+var { query, queryList, queryDetail, queryUser } = require("./api/query.js");
+var { insertUser } = require("./api/insert");
+const jwt = require('jsonwebtoken')
+
+
+
+
 //1.创建一个路由容器
 var router = express.Router();
 //填写自己需要路由的地址
@@ -44,6 +50,46 @@ router.get("/detail/:activeName/:mname", async function(req, res) {
       src:myres[1]
   }, meta: { status: 200 } });
 });
+
+// 用户登录
+router.post('/login', async (req,res)=>{
+
+  const myres = await queryUser(req.body.name)
+  // console.log(myres[0])
+  const token = jwt.sign({
+    name:req.body.name
+  },'seeforKey')
+  
+  if(!myres[0]){
+      // 用户不存在，直接注册
+    const myres1 = await insertUser(req.body.name,req.body.password)
+   
+
+    if(myres1.affectedRows==1){
+     res.send({
+       name:req.body.name,
+       token
+     })   
+    }
+
+  }else{
+    const myres2 = await queryUser(req.body.name)
+    const isPasswordValid = require('bcrypt').compareSync(req.body.password,myres2[0].password)
+    if(!isPasswordValid){
+      res.status(422).send({
+        message:'密码错误'
+      })
+    }else{
+      res.send({
+        name:req.body.name,
+        token
+      })   
+    }
+ 
+    
+  }
+
+})
 
 //3.把router导出
 module.exports = router;

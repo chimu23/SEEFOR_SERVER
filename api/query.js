@@ -121,4 +121,44 @@ const queryUser =(name)=>{
   });
 }
 
-module.exports = { query, queryList, queryDetail, queryUser};
+// 根据名字查找电影
+const querySerach = (val) => {
+  var connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "movie"
+    // multipleStatements: true
+  });
+
+  connection.connect();
+  return new Promise((res, rej) => {
+    connection.query(`select distinct * FROM
+    (
+      (select mname,activeName from anime)
+      UNION ALL
+      (select mname,activeName from carousel)
+     UNION ALL
+      (select mname,activeName from hot)
+     UNION ALL
+      (select mname,activeName from movie)
+     UNION ALL
+      (select mname,activeName from series)
+     UNION ALL
+      (select mname,activeName from variety)
+     ) as a WHEre mname like '%${val}%' `,function(
+      error,
+      results,
+      fields
+    ) {
+      try {
+        res(results);
+      } catch (error) {
+        rej(error)
+      }
+    });
+    connection.end()
+  });
+};
+
+module.exports = { query, queryList, queryDetail, queryUser, querySerach};
